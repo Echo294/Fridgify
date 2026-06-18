@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function HomeScreen() {
+export default function LoginScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Home Screen</Text>
+      <Text style={styles.text}>Login Screen Placeholder</Text>
     </View>
   );
 }
