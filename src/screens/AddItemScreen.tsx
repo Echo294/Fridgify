@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { supabase } from "../lib/supabase";
 
 export default function AddItemScreen() {
   const [name, setName] = useState("");
@@ -7,15 +8,37 @@ export default function AddItemScreen() {
   const [category, setCategory] = useState("");
   const [expiration, setExpiration] = useState("");
 
-  const handleSave = () => {
-    console.log({
-      name,
-      quantity,
-      category,
-      expiration,
-    });
+  //this bit of code handles saving the new item in the database
+  //tells is what table to write to, what info it needs to insert
+  //waits fot the request from supabase, than returns the result
+  const handleSave = async () => {
+    const { data, error } = await supabase.from("items").insert([
+      {
+        name,
+        quantity,
+        category,
+        expiration,
+      },
+
+      //throws up an error is something goes wrong, or saves the item and says it was successful
+    ]);
+
+    if (error) {
+      console.log("Error saving that item:", error);
+      alert("Error saving that item. Please try again." + error.message);
+    } else {
+      console.log("Item saved successfully:", data);
+      alert("Item saved successfully.");
+
+      //clears form after successful save
+      setName("");
+      setQuantity("");
+      setCategory("");
+      setExpiration("");
+    }
   };
 
+  //this is just the styling of the form and all of the buttons
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add a New Item</Text>
@@ -37,7 +60,7 @@ export default function AddItemScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="Category (fridge, freezer, pantry)"
+        placeholder="Category (Fridge, Freezer, Pantry)"
         value={category}
         onChangeText={setCategory}
       />

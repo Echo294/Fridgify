@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { supabase } from "../lib/supabase";
 
+// Signup screen where users can create a new account
+//saves password and an email
 export default function SignupScreen({ navigation }: { navigation: any }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,10 +29,10 @@ export default function SignupScreen({ navigation }: { navigation: any }) {
     setLoading(false);
   };
 
+  //this is the styling for the signup screen
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create an Account</Text>
-
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -38,7 +40,7 @@ export default function SignupScreen({ navigation }: { navigation: any }) {
         value={email}
         onChangeText={setEmail}
       />
-
+      // This is the input field for the user's email.
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -46,14 +48,11 @@ export default function SignupScreen({ navigation }: { navigation: any }) {
         value={password}
         onChangeText={setPassword}
       />
-
       {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
-
       <Button
         title={loading ? "Creating..." : "Sign Up"}
         onPress={handleSignup}
       />
-
       <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
         Already have an account? Log in
       </Text>
