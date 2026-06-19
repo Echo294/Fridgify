@@ -1,3 +1,4 @@
+import { Picker } from "@react-native-picker/picker";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
@@ -9,6 +10,7 @@ type Item = {
   quantity: number;
   category: string;
   expiration: string;
+  location: string;
 };
 
 export default function EditItem() {
@@ -20,17 +22,20 @@ export default function EditItem() {
   const [quantity, setQuantity] = useState(String(item.quantity));
   const [category, setCategory] = useState(item.category);
   const [expiration, setExpiration] = useState(item.expiration);
+  const [location, setLocation] = useState(item.location || "fridge");
 
   const handleUpdate = async () => {
     const { error } = await supabase
       .from("items")
       .update({
         name,
-        quantity: Number(quantity),
+        quantity,
         category,
         expiration,
+        location,
       })
-      .eq("id", item.id);
+      .eq("id", item.id)
+      .select();
 
     if (error) {
       console.log("Error updating item:", error);
@@ -73,6 +78,16 @@ export default function EditItem() {
         style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
       />
 
+      <Picker
+        selectedValue={location}
+        onValueChange={(value) => setLocation(value)}
+        style={{
+          borderWidth: 1,
+          borderColor: "#ccc",
+          borderRadius: 8,
+          marginBottom: 10,
+        }}
+      />
       <Button title="Save Changes" onPress={handleUpdate} />
     </View>
   );
