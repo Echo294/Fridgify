@@ -2,6 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import AddItemScreen from "../screens/AddItemScreen";
+import EditItemScreen from "../screens/EditItem";
 import HomeScreen from "../screens/HomeScreen";
 import ItemsScreen from "../screens/ItemsScreen";
 import LoginScreen from "../screens/LoginScreen";
@@ -18,6 +19,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="AddItem" component={AddItemScreen} />
+        <Stack.Screen name="EditItem" component={EditItemScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
