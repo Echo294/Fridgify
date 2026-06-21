@@ -17,6 +17,7 @@ interface Item {
 type RootStackParamList = {
   Items: undefined;
   EditItem: { item: Item };
+  Recipes: { recipes: any };
 };
 
 export default function ItemsScreen() {
@@ -63,7 +64,7 @@ export default function ItemsScreen() {
   const testRecipes = async () => {
     try {
       const result = await getRecipesByIngredients(["chicken", "rice"]);
-      console.log("TEST RESULT:", result);
+      navigation.navigate("Recipes", { recipes: result });
     } catch (err) {
       console.log("FULL ERROR:", JSON.stringify(err, null, 2));
     }

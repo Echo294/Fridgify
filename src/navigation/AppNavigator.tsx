@@ -6,9 +6,20 @@ import EditItemScreen from "../screens/EditItem";
 import HomeScreen from "../screens/HomeScreen";
 import ItemsScreen from "../screens/ItemsScreen";
 import LoginScreen from "../screens/LoginScreen";
+import RecipesScreen from "../screens/RecipesScreen";
 import SignupScreen from "../screens/SignupScreen";
 
-const Stack = createNativeStackNavigator();
+type RootStackParamList = {
+  ViewItems: undefined;
+  Home: undefined;
+  Login: undefined;
+  Signup: undefined;
+  AddItem: undefined;
+  EditItem: undefined;
+  Recipes: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (
@@ -20,6 +31,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="AddItem" component={AddItemScreen} />
         <Stack.Screen name="EditItem" component={EditItemScreen} />
+        <Stack.Screen name="Recipes" component={RecipesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
