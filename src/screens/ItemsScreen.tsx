@@ -1,8 +1,9 @@
 import type { NavigationProp } from "@react-navigation/native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { supabase } from "../lib/supabase";
+import { Button, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { supabase } from "../../supabase/supabase";
+import { getRecipesByIngredients } from "../lib/recipes";
 
 interface Item {
   id: string;
@@ -21,9 +22,11 @@ type RootStackParamList = {
 export default function ItemsScreen() {
   const [items, setItems] = useState<Item[]>([]);
   const [filter, setFilter] = useState("all");
+
   const navigation =
     useNavigation<NavigationProp<RootStackParamList, "Items">>();
 
+  // Fetch items from Supabase
   const fetchItems = async () => {
     const { data, error } = await supabase
       .from("items")
@@ -37,6 +40,7 @@ export default function ItemsScreen() {
     }
   };
 
+  // Delete an item
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("items").delete().eq("id", id);
 
@@ -48,16 +52,28 @@ export default function ItemsScreen() {
     }
   };
 
+  // Auto-refresh when screen is focused
   useFocusEffect(
     useCallback(() => {
       fetchItems();
     }, []),
   );
 
+  // Test recipes button handler
+  const testRecipes = async () => {
+    try {
+      const result = await getRecipesByIngredients(["chicken", "rice"]);
+      console.log("TEST RESULT:", result);
+    } catch (err) {
+      console.log("FULL ERROR:", JSON.stringify(err, null, 2));
+    }
+  };
+
   return (
     <View style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Items</Text>
 
+      {/* Filter Buttons */}
       <View
         style={{
           flexDirection: "row",
@@ -93,6 +109,10 @@ export default function ItemsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Test Recipes Button */}
+      <Button title="Test Recipes" onPress={testRecipes} />
+
+      {/* Items List */}
       <FlatList
         data={
           filter === "all"

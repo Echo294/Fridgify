@@ -2,7 +2,7 @@ import { Picker } from "@react-native-picker/picker";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../supabase/supabase";
 
 type Item = {
   id: number;

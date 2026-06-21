@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../supabase/supabase";
 
 // Signup screen where users can create a new account
 //saves password and an email

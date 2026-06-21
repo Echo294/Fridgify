@@ -1,7 +1,7 @@
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../supabase/supabase";
 
 export default function AddItemScreen() {
   const [name, setName] = useState("");
