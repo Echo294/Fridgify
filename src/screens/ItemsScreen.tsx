@@ -61,15 +61,23 @@ export default function ItemsScreen() {
   );
 
   // Test recipes button handler
-  const testRecipes = async () => {
+  const findRecipes = async () => {
     try {
-      const result = await getRecipesByIngredients(["chicken", "rice"]);
+      // Convert your stored items into a comma-separated string of ingredient names
+      const ingredientString = items.map((i) => i.name).join(",");
+
+      if (ingredientString.length === 0) {
+        console.log("No ingredients found");
+        return;
+      }
+
+      const result = await getRecipesByIngredients(ingredientString);
+
       navigation.navigate("Recipes", { recipes: result });
     } catch (err) {
       console.log("FULL ERROR:", JSON.stringify(err, null, 2));
     }
   };
-
   return (
     <View style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 24, marginBottom: 20 }}>Items</Text>
@@ -110,10 +118,8 @@ export default function ItemsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Test Recipes Button */}
-      <Button title="Test Recipes" onPress={testRecipes} />
+      <Button title="Find Recipes" onPress={findRecipes} />
 
-      {/* Items List */}
       <FlatList
         data={
           filter === "all"

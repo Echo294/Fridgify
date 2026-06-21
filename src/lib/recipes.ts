@@ -1,8 +1,8 @@
 import { supabase } from "../../supabase/supabase";
 
-export async function getRecipesByIngredients(ingredients: string[]) {
+export async function getRecipesByIngredients(ingredients: string) {
   const { data, error } = await supabase.functions.invoke("recipes", {
-    body: { ingredients: ingredients.join(",") },
+    body: { ingredients },
   });
 
   if (error) {
