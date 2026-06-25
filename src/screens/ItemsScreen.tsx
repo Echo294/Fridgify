@@ -1,7 +1,14 @@
 import type { NavigationProp } from "@react-navigation/native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { Button, FlatList, Text, TouchableOpacity, View } from "react-native";
+import {
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { supabase } from "../../supabase/supabase";
 import { getRecipesByIngredients } from "../lib/recipes";
 
@@ -27,7 +34,6 @@ export default function ItemsScreen() {
   const navigation =
     useNavigation<NavigationProp<RootStackParamList, "Items">>();
 
-  // Fetch items from Supabase
   const fetchItems = async () => {
     const { data, error } = await supabase
       .from("items")
@@ -37,85 +43,56 @@ export default function ItemsScreen() {
       console.log("Error fetching items:", error);
     } else {
       setItems(data as Item[]);
-      console.log("Fetched items:", data);
     }
   };
 
-  // Delete an item
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("items").delete().eq("id", id);
 
     if (error) {
       console.log("Error deleting item:", error);
     } else {
-      console.log("Item deleted");
       fetchItems();
     }
   };
 
-  // Auto-refresh when screen is focused
   useFocusEffect(
     useCallback(() => {
       fetchItems();
     }, []),
   );
 
-  // Test recipes button handler
   const findRecipes = async () => {
     try {
-      // Convert your stored items into a comma-separated string of ingredient names
       const ingredientString = items.map((i) => i.name).join(",");
 
-      if (ingredientString.length === 0) {
+      if (!ingredientString) {
         console.log("No ingredients found");
         return;
       }
 
       const result = await getRecipesByIngredients(ingredientString);
-
       navigation.navigate("Recipes", { recipes: result });
     } catch (err) {
       console.log("FULL ERROR:", JSON.stringify(err, null, 2));
     }
   };
+
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Items</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Items</Text>
 
       {/* Filter Buttons */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
-          marginBottom: 15,
-          paddingHorizontal: 10,
-        }}
-      >
-        <TouchableOpacity onPress={() => setFilter("all")}>
-          <Text style={{ fontWeight: filter === "all" ? "bold" : "normal" }}>
-            All
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setFilter("fridge")}>
-          <Text style={{ fontWeight: filter === "fridge" ? "bold" : "normal" }}>
-            Fridge
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setFilter("freezer")}>
-          <Text
-            style={{ fontWeight: filter === "freezer" ? "bold" : "normal" }}
-          >
-            Freezer
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setFilter("pantry")}>
-          <Text style={{ fontWeight: filter === "pantry" ? "bold" : "normal" }}>
-            Pantry
-          </Text>
-        </TouchableOpacity>
+      <View style={styles.filterRow}>
+        {["all", "fridge", "freezer", "pantry"].map((loc) => (
+          <TouchableOpacity key={loc} onPress={() => setFilter(loc)}>
+            <Text
+              style={[styles.filterText, filter === loc && styles.filterActive]}
+            >
+              {loc.charAt(0).toUpperCase() + loc.slice(1)}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <Button title="Find Recipes" onPress={findRecipes} />
@@ -127,44 +104,27 @@ export default function ItemsScreen() {
             : items.filter((item) => item.location === filter)
         }
         keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: 40 }}
         renderItem={({ item }) => (
-          <View
-            style={{
-              marginBottom: 15,
-              padding: 15,
-              borderWidth: 1,
-              borderColor: "#ddd",
-              borderRadius: 10,
-              backgroundColor: "#fafafa",
-            }}
-          >
-            <Text style={{ fontSize: 20, fontWeight: "600", marginBottom: 6 }}>
-              {item.name}
-            </Text>
+          <View style={styles.card}>
+            <Text style={styles.itemName}>{item.name}</Text>
 
-            <Text style={{ color: "#555" }}>Quantity: {item.quantity}</Text>
-            <Text style={{ color: "#555" }}>Expiration: {item.expiration}</Text>
-            <Text style={{ color: "#555" }}>
+            <Text style={styles.itemDetail}>Quantity: {item.quantity}</Text>
+            <Text style={styles.itemDetail}>Expiration: {item.expiration}</Text>
+            <Text style={styles.itemDetail}>
               Location:{" "}
               {item.location.charAt(0).toUpperCase() + item.location.slice(1)}
             </Text>
 
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "flex-end",
-                marginTop: 12,
-                gap: 20,
-              }}
-            >
+            <View style={styles.actionsRow}>
               <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                <Text style={{ color: "red", fontWeight: "600" }}>Delete</Text>
+                <Text style={styles.delete}>Delete</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() => navigation.navigate("EditItem", { item })}
               >
-                <Text style={{ color: "blue", fontWeight: "600" }}>Edit</Text>
+                <Text style={styles.edit}>Edit</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -173,3 +133,50 @@ export default function ItemsScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 24, marginBottom: 20, color: "black" },
+
+  filterRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  filterText: {
+    fontSize: 16,
+    color: "black",
+  },
+  filterActive: {
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+  },
+
+  card: {
+    marginBottom: 15,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    backgroundColor: "#fafafa",
+  },
+  itemName: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 6,
+    color: "black",
+  },
+  itemDetail: {
+    color: "#555",
+  },
+
+  actionsRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 12,
+    gap: 20,
+  },
+  delete: { color: "red", fontWeight: "600" },
+  edit: { color: "blue", fontWeight: "600" },
+});

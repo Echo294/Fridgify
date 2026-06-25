@@ -1,7 +1,8 @@
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { supabase } from "../../supabase/supabase";
+import AppTextInput from "../components/AppTextInput";
 
 export default function AddItemScreen() {
   const [name, setName] = useState("");
@@ -10,9 +11,6 @@ export default function AddItemScreen() {
   const [expiration, setExpiration] = useState("");
   const [location, setLocation] = useState("fridge");
 
-  //this bit of code handles saving the new item in the database
-  //tells is what table to write to, what info it needs to insert
-  //waits fot the request from supabase, than returns the result
   const handleSave = async () => {
     const { data, error } = await supabase
       .from("items")
@@ -27,8 +25,6 @@ export default function AddItemScreen() {
       ])
       .select();
 
-    //throws up an error is something goes wrong, or saves the item and says it was successful
-
     if (error) {
       console.log("Error saving that item:", error);
       alert("Error saving that item. Please try again." + error.message);
@@ -36,7 +32,6 @@ export default function AddItemScreen() {
       console.log("Item saved successfully:", data);
       alert("Item saved successfully.");
 
-      //clears form after successful save
       setName("");
       setQuantity("");
       setCategory("");
@@ -44,37 +39,36 @@ export default function AddItemScreen() {
     }
   };
 
-  //this is just the styling of the form and all of the buttons
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add a New Item</Text>
 
-      <TextInput
-        style={styles.input}
+      <AppTextInput
         placeholder="Item name"
         value={name}
         onChangeText={setName}
+        style={styles.input}
       />
 
-      <TextInput
-        style={styles.input}
+      <AppTextInput
         placeholder="Quantity"
         value={quantity}
         onChangeText={setQuantity}
         keyboardType="numeric"
+        style={styles.input}
       />
 
-      <TextInput
-        style={styles.input}
+      <AppTextInput
         placeholder="Expiration date (YYYY-MM-DD)"
         value={expiration}
         onChangeText={setExpiration}
+        style={styles.input}
       />
 
       <Picker
         selectedValue={location}
         onValueChange={setLocation}
-        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+        style={styles.picker}
       >
         <Picker.Item label="Fridge" value="fridge" />
         <Picker.Item label="Freezer" value="freezer" />
@@ -90,10 +84,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   title: { fontSize: 24, marginBottom: 20 },
   input: {
+    marginBottom: 12,
+  },
+  picker: {
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 12,
-    borderRadius: 8,
+    padding: 10,
     marginBottom: 12,
+    borderRadius: 8,
   },
 });

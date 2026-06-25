@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { ActivityIndicator, Button, Text, TextInput, View } from "react-native";
+import {
+    ActivityIndicator,
+    Button,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import { supabase } from "../../supabase/supabase";
+import AppTextInput from "../components/AppTextInput";
 
 export default function FeedbackScreen() {
   const [message, setMessage] = useState("");
@@ -33,16 +40,9 @@ export default function FeedbackScreen() {
 
   if (submitted) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 20,
-        }}
-      >
-        <Text style={{ fontSize: 20, marginBottom: 10 }}>Thank you!</Text>
-        <Text style={{ textAlign: "center" }}>
+      <View style={styles.centered}>
+        <Text style={styles.thankYouTitle}>Thank you!</Text>
+        <Text style={styles.thankYouText}>
           Your feedback has been submitted.
         </Text>
       </View>
@@ -50,28 +50,18 @@ export default function FeedbackScreen() {
   }
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Send Feedback</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Send Feedback</Text>
 
-      <TextInput
+      <AppTextInput
         placeholder="Tell me what you'd improve or what you'd like to see here!"
         value={message}
         onChangeText={setMessage}
         multiline
-        style={{
-          height: 150,
-          borderWidth: 1,
-          borderColor: "#ccc",
-          borderRadius: 10,
-          padding: 10,
-          textAlignVertical: "top",
-          marginBottom: 20,
-        }}
+        style={styles.textArea}
       />
 
-      {error ? (
-        <Text style={{ color: "red", marginBottom: 10 }}>{error}</Text>
-      ) : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
 
       {loading ? (
         <ActivityIndicator size="large" color="#4CAF50" />
@@ -81,3 +71,22 @@ export default function FeedbackScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20 },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: { fontSize: 24, marginBottom: 20, color: "black" },
+  thankYouTitle: { fontSize: 20, marginBottom: 10, color: "black" },
+  thankYouText: { textAlign: "center", color: "black" },
+  textArea: {
+    height: 150,
+    textAlignVertical: "top",
+    marginBottom: 20,
+  },
+  error: { color: "red", marginBottom: 10 },
+});

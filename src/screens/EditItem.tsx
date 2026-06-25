@@ -1,8 +1,9 @@
 import { Picker } from "@react-native-picker/picker";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { supabase } from "../../supabase/supabase";
+import AppTextInput from "../components/AppTextInput";
 
 type Item = {
   id: number;
@@ -46,49 +47,63 @@ export default function EditItem() {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Edit Item</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Edit Item</Text>
 
-      <TextInput
+      <AppTextInput
         value={name}
         onChangeText={setName}
         placeholder="Name"
-        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+        style={styles.input}
       />
 
-      <TextInput
+      <AppTextInput
         value={quantity}
         onChangeText={setQuantity}
         placeholder="Quantity"
         keyboardType="numeric"
-        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+        style={styles.input}
       />
 
-      <TextInput
+      <AppTextInput
         value={category}
         onChangeText={setCategory}
         placeholder="Category"
-        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+        style={styles.input}
       />
 
-      <TextInput
+      <AppTextInput
         value={expiration}
         onChangeText={setExpiration}
-        placeholder="Expiration"
-        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+        placeholder="Expiration (YYYY-MM-DD)"
+        style={styles.input}
       />
 
       <Picker
         selectedValue={location}
-        onValueChange={(value) => setLocation(value)}
-        style={{
-          borderWidth: 1,
-          borderColor: "#ccc",
-          borderRadius: 8,
-          marginBottom: 10,
-        }}
-      />
+        onValueChange={setLocation}
+        style={styles.picker}
+      >
+        <Picker.Item label="Fridge" value="fridge" />
+        <Picker.Item label="Freezer" value="freezer" />
+        <Picker.Item label="Pantry" value="pantry" />
+      </Picker>
+
       <Button title="Save Changes" onPress={handleUpdate} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 24, marginBottom: 20, color: "black" },
+  input: {
+    marginBottom: 12,
+  },
+  picker: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+});
