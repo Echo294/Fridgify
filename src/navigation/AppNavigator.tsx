@@ -6,8 +6,17 @@ import EditItemScreen from "../screens/EditItem";
 import HomeScreen from "../screens/HomeScreen";
 import ItemsScreen from "../screens/ItemsScreen";
 import LoginScreen from "../screens/LoginScreen";
+import RecipeDetails from "../screens/RecipeDetails";
 import RecipesScreen from "../screens/RecipesScreen";
 import SignupScreen from "../screens/SignupScreen";
+
+type Recipe = {
+  id: number | string;
+  image: string;
+  title: string;
+  usedIngredientCount: number;
+  missedIngredientCount: number;
+};
 
 type RootStackParamList = {
   ViewItems: undefined;
@@ -15,8 +24,9 @@ type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   AddItem: undefined;
-  EditItem: undefined;
-  Recipes: undefined;
+  EditItem: { item: any };
+  Recipes: { recipes: Recipe[] };
+  RecipeDetail: { id: number | string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -32,6 +42,7 @@ export default function AppNavigator() {
         <Stack.Screen name="AddItem" component={AddItemScreen} />
         <Stack.Screen name="EditItem" component={EditItemScreen} />
         <Stack.Screen name="Recipes" component={RecipesScreen} />
+        <Stack.Screen name="RecipeDetail" component={RecipeDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
