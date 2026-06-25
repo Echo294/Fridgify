@@ -70,9 +70,9 @@ export default function AddItemScreen() {
         onValueChange={setLocation}
         style={styles.picker}
       >
-        <Picker.Item label="Fridge" value="fridge" />
-        <Picker.Item label="Freezer" value="freezer" />
-        <Picker.Item label="Pantry" value="pantry" />
+        <Picker.Item label="Fridge" value="fridge" color="black" />
+        <Picker.Item label="Freezer" value="freezer" color="black" />
+        <Picker.Item label="Pantry" value="pantry" color="black" />
       </Picker>
 
       <Button title="Save Item" onPress={handleSave} />
@@ -82,7 +82,7 @@ export default function AddItemScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
-  title: { fontSize: 24, marginBottom: 20 },
+  title: { fontSize: 24, marginBottom: 20, color: "black" },
   input: {
     marginBottom: 12,
   },
@@ -92,5 +92,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 12,
     borderRadius: 8,
+    color: "black", // helps some Android versions
   },
 });
