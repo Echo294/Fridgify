@@ -15,6 +15,10 @@ export default function HomeScreen() {
         title="View Items"
         onPress={() => navigation.navigate("ViewItems")}
       />
+      <Button
+        title="Send Feedback"
+        onPress={() => navigation.navigate("Feedback")}
+      />
     </View>
   );
 }
@@ -26,6 +30,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-
   title: { fontSize: 24, marginBottom: 20 },
 });

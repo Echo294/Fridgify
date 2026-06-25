@@ -1,6 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import FeedbackScreen from "@/screens/FeedbackScreen";
 import AddItemScreen from "../screens/AddItemScreen";
 import EditItemScreen from "../screens/EditItem";
 import HomeScreen from "../screens/HomeScreen";
@@ -27,6 +28,7 @@ type RootStackParamList = {
   EditItem: { item: any };
   Recipes: { recipes: Recipe[] };
   RecipeDetail: { id: number | string };
+  Feedback: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,6 +45,7 @@ export default function AppNavigator() {
         <Stack.Screen name="EditItem" component={EditItemScreen} />
         <Stack.Screen name="Recipes" component={RecipesScreen} />
         <Stack.Screen name="RecipeDetail" component={RecipeDetails} />
+        <Stack.Screen name="Feedback" component={FeedbackScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
