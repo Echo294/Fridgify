@@ -24,7 +24,7 @@ interface Item {
 type RootStackParamList = {
   Items: undefined;
   EditItem: { item: Item };
-  Recipes: { recipes: any };
+  Recipes: { recipes: any; userIngredients: string[] };
 };
 
 export default function ItemsScreen() {
@@ -64,17 +64,28 @@ export default function ItemsScreen() {
 
   const findRecipes = async () => {
     try {
-      const ingredientString = items.map((i) => i.name).join(",");
+      const ingredientNames = items.map((i) => i.name);
 
-      if (!ingredientString) {
+      if (ingredientNames.length === 0) {
         console.log("No ingredients found");
         return;
       }
 
-      const result = await getRecipesByIngredients(ingredientString);
-      navigation.navigate("Recipes", { recipes: result });
-    } catch (err) {
-      console.log("FULL ERROR:", JSON.stringify(err, null, 2));
+      console.log("🔥 SCREEN CALLING FUNCTION");
+
+      const result = await getRecipesByIngredients(ingredientNames);
+
+      if (!result || result.length === 0) {
+        console.log("No recipes found");
+        return;
+      }
+
+      navigation.navigate("Recipes", {
+        recipes: result,
+        userIngredients: ingredientNames,
+      });
+    } catch (error) {
+      console.log("Error finding recipes:", error);
     }
   };
 

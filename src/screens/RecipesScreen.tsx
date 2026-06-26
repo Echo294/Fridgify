@@ -1,96 +1,111 @@
-import { useNavigation } from "@react-navigation/native";
-import type { FC } from "react";
+import { useRoute } from "@react-navigation/native";
+import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
-  Image,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import FadeIn from "../components/FadeIn";
+import RecipeCard from "../components/RecipeCard";
+import { getRecipesByIngredients } from "../lib/recipes";
 
-type Recipe = {
-  id: number | string;
-  image: string;
-  title: string;
-  usedIngredientCount: number;
-  missedIngredientCount: number;
-};
+export default function RecipeScreen() {
+  // Read params from navigation
+  const route = useRoute();
+  const { userIngredients } = route.params as { userIngredients: string[] };
 
-type Props = {
-  route: {
-    params: {
-      recipes: Recipe[];
-    };
+  const [recipes, setRecipes] = useState<any[]>([]);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const listRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    loadInitialRecipes();
+  }, []);
+
+  const loadInitialRecipes = async () => {
+    try {
+      if (!userIngredients || userIngredients.length === 0) {
+        console.log("❌ No ingredients passed to RecipeScreen");
+        setRecipes([]);
+        setLoading(false);
+        return;
+      }
+
+      const firstPage = await getRecipesByIngredients(userIngredients, 0, 20);
+      setRecipes(firstPage);
+      setPage(1);
+    } catch (err) {
+      console.log("Error loading recipes:", err);
+    }
+    setLoading(false);
   };
-};
 
-const RecipesScreen: FC<Props> = ({ route }) => {
-  const { recipes } = route.params;
-  const navigation = useNavigation<any>();
+  const refreshRecipes = async () => {
+    setRefreshing(true);
+
+    try {
+      const randomPage = Math.floor(Math.random() * 5); // 0–4
+      const newPage = await getRecipesByIngredients(
+        userIngredients,
+        randomPage,
+        20,
+      );
+
+      setRecipes(newPage);
+      setPage(randomPage + 1);
+
+      listRef.current?.scrollToOffset({ offset: 0, animated: true });
+    } catch (err) {
+      console.log("Error refreshing recipes:", err);
+    }
+
+    setRefreshing(false);
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Recipes</Text>
-
-      <FlatList
-        data={recipes}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ paddingBottom: 40 }} // prevents cutoff
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("RecipeDetail", { id: item.id })}
-          >
-            <View style={styles.card}>
-              <Image source={{ uri: item.image }} style={styles.image} />
-
-              <Text style={styles.recipeTitle}>{item.title}</Text>
-
-              <Text style={styles.detail}>
-                Used Ingredients: {item.usedIngredientCount}
+    <FlatList
+      ref={listRef}
+      data={recipes}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <FadeIn>
+          <RecipeCard recipe={item} />
+        </FadeIn>
+      )}
+      ListFooterComponent={
+        <View style={{ padding: 20 }}>
+          {refreshing ? (
+            <ActivityIndicator size="large" />
+          ) : (
+            <TouchableOpacity
+              onPress={refreshRecipes}
+              style={{
+                backgroundColor: "#4CAF50",
+                padding: 15,
+                borderRadius: 10,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+                Refresh Recipes
               </Text>
-
-              <Text style={styles.detail}>
-                Missing Ingredients: {item.missedIngredientCount}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+            </TouchableOpacity>
+          )}
+        </View>
+      }
+    />
   );
-};
-
-export default RecipesScreen;
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 24, marginBottom: 20, color: "black" },
-
-  card: {
-    marginBottom: 20,
-    padding: 15,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    backgroundColor: "#fafafa",
-  },
-
-  image: {
-    width: "100%",
-    height: 150,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-
-  recipeTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "black",
-    marginBottom: 6,
-  },
-
-  detail: {
-    color: "#555",
-  },
-});
+}
